@@ -1,0 +1,136 @@
+package com.example.exampractice
+
+import android.content.Intent
+import android.os.Bundle
+import android.view.inputmethod.ExtractedText
+import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.exampractice.ui.theme.ExamPracticeTheme
+
+class MainActivity4 : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            TicketBooking()
+        }
+    }
+}
+
+@Composable
+fun TicketBooking() {
+
+    var noseats by remember { mutableStateOf("") }
+    var paidAmount by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
+
+    val context = LocalContext.current
+    val ticketPrice = 500
+
+    Column(
+        modifier = Modifier.fillMaxSize()
+            .background(Color.Cyan),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(R.drawable.movie),
+            contentDescription = "movie"
+        )
+
+        Text(
+            text = "3 Idiots",
+            fontSize = 22.sp
+        )
+
+        Text(
+            text = "Ticket price: ₹500 per person",
+            fontSize = 20.sp,
+        )
+
+        OutlinedTextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text("Name") }
+        )
+
+        OutlinedTextField(
+            value = noseats,
+            onValueChange = { noseats = it },
+            label = { Text("No of seats") }
+        )
+
+        OutlinedTextField(
+            value = paidAmount,
+            onValueChange = { paidAmount = it },
+            label = { Text("Paid amount") }
+        )
+
+        Button(
+            onClick = {
+                val seats = noseats.toIntOrNull() ?: 0
+                val amount = paidAmount.toIntOrNull() ?: 0
+
+                when {
+                    name.isEmpty() -> {
+                        Toast.makeText(context, "Name is empty", Toast.LENGTH_LONG).show()
+                    }
+
+                    seats <= 0 -> {
+                        Toast.makeText(context, "Enter valid number of seats", Toast.LENGTH_LONG).show()
+                    }
+
+                    amount != seats * ticketPrice -> {
+                        Toast.makeText(context, "Incorrect amount", Toast.LENGTH_LONG).show()
+                    }
+
+                    else -> {
+                        Toast.makeText(context, "Movie ticket booked successfully", Toast.LENGTH_LONG).show()
+
+                        val intent = Intent(Intent.ACTION_SEND).apply {
+                            type = "text/plain"
+                            putExtra(Intent.EXTRA_TEXT, "Movie ticket booked successfully")
+                        }
+                        context.startActivity(intent)
+                    }
+                }
+            }
+        ) {
+            Text("Book Ticket")
+        }
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun GreetingPreview2() {
+    TicketBooking()
+}
